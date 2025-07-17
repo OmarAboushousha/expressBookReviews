@@ -55,9 +55,28 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
   const id = req.params.isbn;
   const username = req.session.authorization.username;
-  const review = req.query.review;
-  
-  return res.status(300).json({message: "Yet to be implemented"});
+  const review = req.query.reviews;
+  if (books[id]) {
+    books[id].reviews[username] = review;
+    res.status(200).send("Review added successfully");
+  } else {
+    res.status(404).send("Book not found");
+  }
+});
+
+regd_users.delete("/auth/review/:isbn", (req,res) => {
+  const id = req.params.isbn;
+  const username = req.session.authorization.username;
+  if (books[id]) {
+    if (books[id].reviews[username]) {
+        delete books[id].reviews[username];
+        res.status(200).send("Review deleted successfully");
+    } else {
+        res.status(404).send("You have no reviews for this book");
+    }
+  } else {
+    res.status(404).send("Book not found");
+  }
 });
 
 module.exports.authenticated = regd_users;
